@@ -87,7 +87,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.3, ease: EASE_OUT }}
-          className="relative mx-auto aspect-[4/3] w-full max-w-lg lg:max-w-xl"
+          className="relative mx-auto mb-16 aspect-[4/3] w-full max-w-lg md:mb-0 lg:max-w-xl"
         >
           {use3D ? <Terminal3D /> : <StaticTerminal />}
         </motion.div>

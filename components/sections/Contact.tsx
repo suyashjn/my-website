@@ -45,8 +45,9 @@ export default function Contact() {
           >
             <motion.a
               variants={fadeUp}
+              whileHover={{ scale: 1.03 }}
               href={`mailto:${contact.email}`}
-              className="rounded-lg bg-accent px-5 py-2.5 font-mono text-xs tracking-wide text-ink transition-transform hover:scale-[1.03]"
+              className="rounded-lg bg-accent px-5 py-2.5 font-mono text-xs tracking-wide text-ink"
             >
               Send a message
             </motion.a>

@@ -1,7 +1,7 @@
 export const profile = {
   name: "Suyash Jain",
   role: "Software Engineer",
-  tagline: "I am a Senior Full-Stack Engineer who designs scalable microservice architectures, builds high-performance .NET applications, and crafts dynamic React/Angular frontends natively integrated into AWS, Azure, and GCP.",
+  tagline: "Senior Full-Stack Engineer specializing in scalable .NET Core microservices, crafting dynamic React/Angular frontends, and cloud-native solutions across AWS, Azure, and GCP.",
   location: "[City, Country]",
   summary:
     "[Short placeholder summary about you — a couple of sentences go here. Replace with your own introduction.]",
