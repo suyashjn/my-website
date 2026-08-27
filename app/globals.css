@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+:root,
+[data-theme="dark"] {
+  --canvas: #121218;
+  --surface: #1c1c25;
+  --line: #2c2c37;
+  --ink: #ededf2;
+  --dim: #8b8b97;
+  --accent: #7c5cff;
+  --flare: #ff8a4c;
+}
+
+[data-theme="light"] {
+  --canvas: #f3f3f6;
+  --surface: #e8e8ed;
+  --line: #d8d8e0;
+  --ink: #1a1a21;
+  --dim: #6f6f7f;
+  --accent: #7c5cff;
+  --flare: #ff8a4c;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-dim: var(--dim);
+  --color-accent: var(--accent);
+  --color-flare: var(--flare);
+
+  --font-display: var(--font-display-raw);
+  --font-body: var(--font-body-raw);
+  --font-mono: var(--font-mono-raw);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  scrollbar-color: var(--accent) transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.glass-panel {
+  background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--ink) 6%, transparent),
+      transparent 45%
+    ),
+    color-mix(in srgb, var(--surface) 62%, transparent);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--ink) 8%, transparent),
+    0 8px 30px color-mix(in srgb, black 40%, transparent);
+}
+
+.terminal-glass {
+  background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--ink) 8%, transparent),
+      transparent 45%
+    ),
+    color-mix(in srgb, var(--canvas) 40%, transparent);
+  backdrop-filter: blur(26px) saturate(200%);
+  -webkit-backdrop-filter: blur(26px) saturate(200%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 30px 60px -15px rgba(0, 0, 0, 0.55),
+    0 12px 24px -10px rgba(0, 0, 0, 0.4);
+}
+
+.terminal-glass .terminal-glass-header {
+  background: color-mix(in srgb, var(--surface) 48%, transparent);
+}
+
+[data-theme="light"] .terminal-glass {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 25px 50px -15px rgba(26, 26, 33, 0.18),
+    0 10px 20px -10px rgba(26, 26, 33, 0.12);
+}
+
+[data-theme="light"] .glass-panel {
+  background: linear-gradient(
+      135deg,
+      color-mix(in srgb, white 60%, transparent),
+      transparent 45%
+    ),
+    color-mix(in srgb, var(--surface) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 95%, transparent),
+    0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
+    0 16px 40px color-mix(in srgb, var(--ink) 16%, transparent);
 }

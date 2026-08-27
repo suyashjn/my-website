@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio Website
 
-## Getting Started
+A personal portfolio built in Next.js — Home, Skills, Work Experience, and Contact.
 
-First, run the development server:
+## Design concept — "Runtime"
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The site is grounded in what a developer's world actually looks like: running systems, dependency graphs, commit logs — dark and moody, not a drafting sheet, not a terminal cliché. The hero features an **interactive 3D node graph** (glowing nodes, connecting edges, small "packet" pulses traveling along them, rotates continuously and tilts with the mouse) rendered as a live dependency graph. Panels throughout use a **frosted glass** treatment with a mouse-tracked tilt on hover, section headings use a small lowercase mono eyebrow styled like a code comment (`// stack`), and Work Experience reads like a commit log. A soft ambient glow follows the cursor and the header shows a ticking local time — small "alive" touches that stay subtle rather than flashy.
+
+**Color tokens** (`app/globals.css`, `:root`):
+| Variable | Hex | Use |
+|---|---|---|
+| `--canvas` | `#0A0A0F` | page background |
+| `--surface` | `#14141C` | glass panel base (used with alpha) |
+| `--line` | `#26262F` | hairlines, borders, dividers |
+| `--ink` | `#EDEDF2` | primary text |
+| `--dim` | `#83838F` | secondary/muted text |
+| `--accent` | `#7C5CFF` | primary interactive color — CTAs, links, active states, node graph |
+| `--flare` | `#FF8A4C` | secondary accent, used sparingly (status dot, packet pulses, diff marks) |
+
+These are re-exposed as Tailwind color utilities (`bg-canvas`, `text-dim`, `border-accent/40`, etc.) via the `@theme inline` block right below them.
+
+**Fonts** (`app/layout.tsx`, loaded with `next/font/google`):
+- **Sora** → `font-display` — headlines, section titles
+- **Inter** → `font-body` — body copy (applied globally on `<body>`)
+- **JetBrains Mono** → `font-mono` — nav labels, eyebrows, tags, captions
+
+## Structure
+
+```
+app/
+  layout.tsx        fonts, metadata, root layout
+  page.tsx           assembles the 4 sections
+  globals.css        Tailwind import, color/font tokens, .glass-panel utility
+components/
+  FluidBackground.tsx  ambient drifting blurred gradient blobs
+  CursorGlow.tsx        soft accent glow that follows the pointer
+  Header.tsx             fixed nav pill, scroll-spy active section, live local time
+  Scene3D.tsx             react-three-fiber node graph (client-only, mouse parallax)
+  StaticNodeGraph.tsx     SVG fallback for the hero graph (mobile / reduced-motion)
+  sections/
+    Hero.tsx, Skills.tsx, Experience.tsx, Contact.tsx   the 4 page sections
+  ui/
+    GlassPanel.tsx        shared frosted-glass wrapper with tilt-on-hover
+    SectionHeading.tsx     "// eyebrow" + title section heading
+    CredentialChip.tsx      certification credential chip
+lib/
+  motion.ts    shared Framer Motion variants (fade/rise, stagger, path-draw)
+  hooks.ts      usePrefersReducedMotion / useIsCompact media-query hooks
+data/
+  content.ts    all placeholder content (name, skills, certifications, experience, contact)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Editing content
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Everything text-based lives in **`data/content.ts`** — edit that file to put in your real name, skills, certifications, companies, and contact details. Nothing else needs to change; every section reads from this file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Motion & 3D behavior
 
-## Learn More
+- Section reveals (`whileInView`) and the panel tilt-on-hover use Framer Motion (`lib/motion.ts`, `components/ui/GlassPanel.tsx`).
+- The hero's 3D node graph (`components/Scene3D.tsx`) is loaded client-only via `next/dynamic` and swapped for a static SVG (`components/StaticNodeGraph.tsx`) on small screens or when the OS "reduce motion" setting is on, to avoid unnecessary WebGL cost and respect accessibility preferences.
+- The cursor glow and panel tilt are likewise disabled under `prefers-reduced-motion` and on touch/compact devices.
+- All animated components check `prefers-reduced-motion` and skip/soften motion accordingly.
 
-To learn more about Next.js, take a look at the following resources:
+## Setup & run
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # production build
+npm run start    # serve the production build
+```
