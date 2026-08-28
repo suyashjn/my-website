@@ -24,7 +24,7 @@ export default function Experience() {
               <span className="absolute -left-[calc(2rem+3px)] sm:-left-[calc(2.5rem+3px)] top-2 h-2.5 w-2.5 rounded-full bg-dim" />
 
               <GlassPanel className="p-6">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <div className="flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-2">
                   <h3 className="font-display text-lg text-accent">{entry.company}</h3>
                   <span className="font-mono text-[11px] text-dim">{entry.period}</span>
                 </div>
