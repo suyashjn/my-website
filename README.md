@@ -4,20 +4,20 @@ A personal portfolio built in Next.js — Home, Skills, Work Experience, and Con
 
 ## Design concept — "Runtime"
 
-The site is grounded in what a developer's world actually looks like: running systems, dependency graphs, commit logs — dark and moody, not a drafting sheet, not a terminal cliché. The hero features an **interactive 3D node graph** (glowing nodes, connecting edges, small "packet" pulses traveling along them, rotates continuously and tilts with the mouse) rendered as a live dependency graph. Panels throughout use a **frosted glass** treatment with a mouse-tracked tilt on hover, section headings use a small lowercase mono eyebrow styled like a code comment (`// stack`), and Work Experience reads like a commit log. A soft ambient glow follows the cursor and the header shows a ticking local time — small "alive" touches that stay subtle rather than flashy.
+The site is grounded in what a developer's world actually looks like: running systems, terminals, commit logs — dark and moody, not a drafting sheet. The hero features a **3D animated terminal card** (rendered via react-three-fiber, tilts with the mouse) that types out a small scripted session (`whoami`, `cat role.txt`, `ls skills/`, `cat status.txt`) sourced live from `data/content.ts`. Panels throughout use a **frosted glass** treatment with a mouse-tracked tilt on hover, section headings use a small lowercase mono eyebrow styled like a code comment (`// stack`), and Work Experience reads like a commit log. A soft ambient glow follows the cursor, the header shows a ticking local time, and a dark/light theme toggle persists to `localStorage` — small "alive" touches that stay subtle rather than flashy.
 
-**Color tokens** (`app/globals.css`, `:root`):
-| Variable | Hex | Use |
-|---|---|---|
-| `--canvas` | `#0A0A0F` | page background |
-| `--surface` | `#14141C` | glass panel base (used with alpha) |
-| `--line` | `#26262F` | hairlines, borders, dividers |
-| `--ink` | `#EDEDF2` | primary text |
-| `--dim` | `#83838F` | secondary/muted text |
-| `--accent` | `#7C5CFF` | primary interactive color — CTAs, links, active states, node graph |
-| `--flare` | `#FF8A4C` | secondary accent, used sparingly (status dot, packet pulses, diff marks) |
+**Color tokens** (`app/globals.css`, driven by `data-theme` on `<html>`):
+| Variable | Dark | Light | Use |
+|---|---|---|---|
+| `--canvas` | `#121218` | `#F3F3F6` | page background |
+| `--surface` | `#1C1C25` | `#E8E8ED` | glass panel base (used with alpha) |
+| `--line` | `#2C2C37` | `#D8D8E0` | hairlines, borders, dividers |
+| `--ink` | `#EDEDF2` | `#1A1A21` | primary text |
+| `--dim` | `#8B8B97` | `#6F6F7F` | secondary/muted text |
+| `--accent` | `#7C5CFF` | `#7C5CFF` | primary interactive color — CTAs, links, active states, terminal prompt |
+| `--flare` | `#FF8A4C` | `#FF8A4C` | secondary accent, used sparingly (status dot, diff marks) |
 
-These are re-exposed as Tailwind color utilities (`bg-canvas`, `text-dim`, `border-accent/40`, etc.) via the `@theme inline` block right below them.
+These are re-exposed as Tailwind color utilities (`bg-canvas`, `text-dim`, `border-accent/40`, etc.) via the `@theme inline` block right below them. Theme state lives in `ThemeProvider` (React context + `localStorage`, toggled from `Header`).
 
 **Fonts** (`app/layout.tsx`, loaded with `next/font/google`):
 - **Sora** → `font-display` — headlines, section titles
@@ -28,15 +28,20 @@ These are re-exposed as Tailwind color utilities (`bg-canvas`, `text-dim`, `bord
 
 ```
 app/
-  layout.tsx        fonts, metadata, root layout
+  layout.tsx        fonts, metadata, ThemeProvider wrapper, root layout
   page.tsx           assembles the 4 sections
-  globals.css        Tailwind import, color/font tokens, .glass-panel utility
+  globals.css        Tailwind import, dark/light color tokens, font tokens
 components/
-  FluidBackground.tsx  ambient drifting blurred gradient blobs
-  CursorGlow.tsx        soft accent glow that follows the pointer
-  Header.tsx             fixed nav pill, scroll-spy active section, live local time
-  Scene3D.tsx             react-three-fiber node graph (client-only, mouse parallax)
-  StaticNodeGraph.tsx     SVG fallback for the hero graph (mobile / reduced-motion)
+  FluidBackground.tsx   ambient drifting blurred gradient blobs
+  CursorGlow.tsx          soft accent glow that follows the pointer
+  Header.tsx               fixed nav pill, scroll-spy active section, live local time, theme toggle
+  ThemeProvider.tsx         dark/light theme context, persisted to localStorage
+  Terminal3D.tsx            react-three-fiber 3D terminal card (client-only, mouse parallax)
+  StaticTerminal.tsx        non-3D fallback for the hero terminal (mobile / reduced-motion)
+  terminal/
+    TerminalBody.tsx          shared terminal chrome + rendered command/output blocks
+    script.ts                  scripted commands (whoami, ls skills/, ...), sourced from data/content
+    useTerminalPlayback.ts     typing/output playback animation state machine
   sections/
     Hero.tsx, Skills.tsx, Experience.tsx, Contact.tsx   the 4 page sections
   ui/
@@ -57,7 +62,7 @@ Everything text-based lives in **`data/content.ts`** — edit that file to put i
 ## Motion & 3D behavior
 
 - Section reveals (`whileInView`) and the panel tilt-on-hover use Framer Motion (`lib/motion.ts`, `components/ui/GlassPanel.tsx`).
-- The hero's 3D node graph (`components/Scene3D.tsx`) is loaded client-only via `next/dynamic` and swapped for a static SVG (`components/StaticNodeGraph.tsx`) on small screens or when the OS "reduce motion" setting is on, to avoid unnecessary WebGL cost and respect accessibility preferences.
+- The hero's 3D terminal (`components/Terminal3D.tsx`) is loaded client-only via `next/dynamic` and swapped for a non-3D version (`components/StaticTerminal.tsx`) on small screens or when the OS "reduce motion" setting is on, to avoid unnecessary WebGL cost and respect accessibility preferences. Both render the same `terminal/TerminalBody.tsx` for the typed command/output content.
 - The cursor glow and panel tilt are likewise disabled under `prefers-reduced-motion` and on touch/compact devices.
 - All animated components check `prefers-reduced-motion` and skip/soften motion accordingly.
 
